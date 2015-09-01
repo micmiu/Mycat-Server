@@ -5,13 +5,7 @@ import io.mycat.route.parser.druid.MycatSchemaStatVisitor;
 import io.mycat.server.config.SchemaConfig;
 import io.mycat.util.StringUtil;
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/parser/druid/impl/DruidAlterTableParser.java
-import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
-import org.opencloudb.config.model.SchemaConfig;
-import org.opencloudb.route.RouteResultset;
-=======
 import java.sql.SQLNonTransientException;
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/parser/druid/impl/DruidAlterTableParser.java
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableStatement;
@@ -23,11 +17,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableStatemen
  */
 public class DruidAlterTableParser extends DefaultDruidParser {
 	@Override
-<<<<<<< HEAD:src/main/java/org/opencloudb/parser/druid/impl/DruidAlterTableParser.java
-	public void visitorParse(RouteResultset rrs, SQLStatement stmt,SchemaStatVisitor visitor) throws SQLNonTransientException {
-=======
 	public void visitorParse(RouteResultset rrs, SQLStatement stmt,MycatSchemaStatVisitor visitor) throws SQLNonTransientException {
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/parser/druid/impl/DruidAlterTableParser.java
 		
 	}
 	@Override

@@ -46,25 +46,6 @@ public class CommitNodeHandler implements ResponseHandler {
 
 	public void commit(BackendConnection conn) {
 		conn.setResponseHandler(CommitNodeHandler.this);
-<<<<<<< HEAD:src/main/java/org/opencloudb/mysql/nio/handler/CommitNodeHandler.java
-	   if(conn instanceof MySQLConnection)
-	   {
-		   MySQLConnection mysqlCon = (MySQLConnection) conn;
-		   if (mysqlCon.getXaStatus() == 1)
-		   {
-			   String xaTxId = session.getXaTXID();
-			   String[] cmds = new String[]{"XA END " + xaTxId,
-					   "XA PREPARE " + xaTxId};
-			   mysqlCon.execBatchCmd(cmds);
-		   } else
-		   {
-			   conn.commit();
-		   }
-	   }else
-	   {
-		   conn.commit();
-	   }
-=======
 		if (conn instanceof MySQLBackendConnection) {
 			MySQLBackendConnection mysqlCon = (MySQLBackendConnection) conn;
 			if (mysqlCon.getXaStatus() == 1) {
@@ -78,7 +59,6 @@ public class CommitNodeHandler implements ResponseHandler {
 		} else {
 			conn.commit();
 		}
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/executors/CommitNodeHandler.java
 	}
 
 	@Override
@@ -89,26 +69,6 @@ public class CommitNodeHandler implements ResponseHandler {
 
 	@Override
 	public void okResponse(byte[] ok, BackendConnection conn) {
-<<<<<<< HEAD:src/main/java/org/opencloudb/mysql/nio/handler/CommitNodeHandler.java
-		if(conn instanceof MySQLConnection)
-		{
-			MySQLConnection mysqlCon = (MySQLConnection) conn;
-			switch (mysqlCon.getXaStatus())
-			{
-				case 1:
-					if (mysqlCon.batchCmdFinished())
-					{
-						String xaTxId = session.getXaTXID();
-						mysqlCon.execCmd("XA COMMIT " + xaTxId);
-						mysqlCon.setXaStatus(2);
-					}
-					return;
-				case 2:
-				{
-					mysqlCon.setXaStatus(0);
-					break;
-				}
-=======
 		if (conn instanceof MySQLBackendConnection) {
 			MySQLBackendConnection mysqlCon = (MySQLBackendConnection) conn;
 			switch (mysqlCon.getXaStatus()) {
@@ -123,7 +83,6 @@ public class CommitNodeHandler implements ResponseHandler {
 				mysqlCon.setXaStatus(0);
 				break;
 			}
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/executors/CommitNodeHandler.java
 			}
 		}
 		session.clearResources(false);

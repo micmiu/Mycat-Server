@@ -51,16 +51,12 @@ public class DataHostConfig {
 	private final DBHostConfig[] writeHosts;
 	private final Map<Integer, DBHostConfig[]> readHosts;
 	private String hearbeatSQL;
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/model/DataHostConfig.java
-	private String connectionInitSql;
-=======
     private boolean isShowSlaveSql=false;
 	private String connectionInitSql;
     private int slaveThreshold = -1;
 	private final int switchType;
 	private String filters="mergeStat";
 	private long logTime=300000;
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/DataHostConfig.java
 
 	public DataHostConfig(String name, String dbType, String dbDriver,
 			DBHostConfig[] writeHosts, Map<Integer, DBHostConfig[]> readHosts,int switchType,int slaveThreshold) {
@@ -84,16 +80,6 @@ public class DataHostConfig {
 
 	public int getSwitchType() {
 		return switchType;
-	}
-
-	public String getConnectionInitSql()
-	{
-		return connectionInitSql;
-	}
-
-	public void setConnectionInitSql(String connectionInitSql)
-	{
-		this.connectionInitSql = connectionInitSql;
 	}
 
 	public String getConnectionInitSql()

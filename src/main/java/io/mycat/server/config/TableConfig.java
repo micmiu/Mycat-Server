@@ -28,12 +28,6 @@ import io.mycat.util.SplitUtil;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/model/TableConfig.java
-
-import org.opencloudb.config.model.rule.RuleConfig;
-import org.opencloudb.util.SplitUtil;
-=======
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/TableConfig.java
 
 /**
  * @author mycat

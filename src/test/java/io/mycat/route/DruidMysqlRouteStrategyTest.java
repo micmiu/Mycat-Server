@@ -450,13 +450,8 @@ public class DruidMysqlRouteStrategyTest extends TestCase {
         Assert.assertEquals(-1l, rrs.getLimitSize());
         Assert.assertEquals(128, rrs.getNodes().length);
         for (int i = 0; i < 128; i++) {
-<<<<<<< HEAD:src/test/java/org/opencloudb/route/DruidMysqlRouteStrategyTest.java
-            Assert.assertEquals("offer_dn" + i ,
-                    rrs.getNodes()[i].getName());
-=======
 //            Assert.assertEquals("offer_dn" + i ,
 //                    rrs.getNodes()[i].getName());//node的排序有变化，所以此处不强求
->>>>>>> mycatapache/master:src/test/java/io/mycat/route/DruidMysqlRouteStrategyTest.java
             Assert.assertEquals(
                     "select * from offer where (offer_id, group_id ) In (123,234)",
                     rrs.getNodes()[i].getStatement());

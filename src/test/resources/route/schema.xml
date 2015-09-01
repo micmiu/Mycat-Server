@@ -77,31 +77,6 @@
 		<table name="offer1" dataNode="sqlserver_1" rule="offerRule" />
 	</schema>
 
-    <schema name="mysqldb"  sqlMaxLimit="100">
-        <table name="offer" dataNode="dn1,dn2" rule="offerRule" />
-        <table name="offer1" dataNode="dn1" rule="offerRule" />
-    </schema>
-    <schema name="oracledb"  sqlMaxLimit="100">
-        <table name="offer" dataNode="d_oracle1,d_oracle2" rule="offerRule" />
-        <table name="offer1" dataNode="d_oracle1" rule="offerRule" />
-    </schema>
-
-	<schema name="db2db"  sqlMaxLimit="100">
-		<table name="offer" dataNode="db2_1,db2_2" rule="offerRule" />
-		<table name="offer1" dataNode="db2_1" rule="offerRule" />
-	</schema>
-
-
-	<schema name="sqlserverdb"  sqlMaxLimit="100">
-		<table name="offer" dataNode="sqlserver_1,sqlserver_2" rule="offerRule" />
-		<table name="offer1" dataNode="sqlserver_1" rule="offerRule" />
-	</schema>
-
-
-	<schema name="pgdb"  sqlMaxLimit="100">
-		<table name="offer" dataNode="pg_1,pg_2" rule="offerRule" />
-		<table name="offer1" dataNode="pg_1" rule="offerRule" />
-	</schema>
 
 	<schema name="pgdb"  sqlMaxLimit="100">
 		<table name="offer" dataNode="pg_1,pg_2" rule="offerRule" />

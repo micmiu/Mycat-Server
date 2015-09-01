@@ -23,20 +23,12 @@
  */
 package io.mycat.route;
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/route/RouteResultset.java
-import org.opencloudb.MycatConfig;
-import org.opencloudb.MycatServer;
-import org.opencloudb.config.model.SchemaConfig;
-import org.opencloudb.parser.util.PageSQLUtil;
-import org.opencloudb.util.FormatUtil;
-=======
 import io.mycat.MycatConfig;
 import io.mycat.route.util.PageSQLUtil;
 import io.mycat.server.MycatServer;
 import io.mycat.server.config.SchemaConfig;
 import io.mycat.sqlengine.mpp.HavingCols;
 import io.mycat.util.FormatUtil;
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/RouteResultset.java
 
 import java.io.Serializable;
 import java.util.HashMap;

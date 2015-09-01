@@ -47,10 +47,7 @@ public class SchemaConfig {
 	private final int defaultMaxLimit;
 	private final boolean checkSQLSchema;
 	private  boolean needSupportMultiDBType=false;
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/model/SchemaConfig.java
-=======
 	private  String defaultDataNodeDbType;
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/SchemaConfig.java
 	/**
 	 * key is join relation ,A.ID=B.PARENT_ID value is Root Table ,if a->b*->c*
 	 * ,then A is root table

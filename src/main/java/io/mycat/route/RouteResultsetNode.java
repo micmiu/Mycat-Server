@@ -47,11 +47,8 @@ public final class RouteResultsetNode implements Serializable , Comparable<Route
 	private int limitSize;
 	private int totalNodeSize =0; //方便后续jdbc批量获取扩展
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/route/RouteResultsetNode.java
-=======
 	private LoadData loadData;
 
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/RouteResultsetNode.java
 	public RouteResultsetNode(String name, int sqlType, String srcStatement) {
 		this.name = name;
 		limitStart=0;
@@ -127,8 +124,6 @@ public final class RouteResultsetNode implements Serializable , Comparable<Route
 		this.totalNodeSize = totalNodeSize;
 	}
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/route/RouteResultsetNode.java
-=======
 	public LoadData getLoadData()
 	{
 		return loadData;
@@ -139,7 +134,6 @@ public final class RouteResultsetNode implements Serializable , Comparable<Route
 		this.loadData = loadData;
 	}
 
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/RouteResultsetNode.java
 	@Override
 	public int hashCode() {
 		return name.hashCode();

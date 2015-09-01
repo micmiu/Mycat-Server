@@ -31,20 +31,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-import org.opencloudb.backend.PhysicalDBPool;
-import org.opencloudb.config.loader.SchemaLoader;
-import org.opencloudb.config.model.DBHostConfig;
-import org.opencloudb.config.model.DataHostConfig;
-import org.opencloudb.config.model.DataNodeConfig;
-import org.opencloudb.config.model.SchemaConfig;
-import org.opencloudb.config.model.TableConfig;
-import org.opencloudb.config.model.rule.TableRuleConfig;
-import org.opencloudb.config.util.ConfigException;
-import org.opencloudb.config.util.ConfigUtil;
-import org.opencloudb.util.SplitUtil;
-=======
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -112,11 +98,7 @@ public class XMLSchemaLoader implements SchemaLoader {
 			loadSchemas(root);
 		} catch (ConfigException e) {
 			throw e;
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-		} catch (Throwable e) {
-=======
 		} catch (Exception e) {
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 
 			throw new ConfigException(e);
 		} finally {
@@ -165,10 +147,6 @@ public class XMLSchemaLoader implements SchemaLoader {
 				throw new ConfigException("schema " + name + " duplicated!");
 			}
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-			
-=======
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 			// 设置了table的不需要设置dataNode属性，没有设置table的必须设置dataNode属性
 			if (dataNode == null && tables.size() == 0) {
 				throw new ConfigException(
@@ -177,19 +155,6 @@ public class XMLSchemaLoader implements SchemaLoader {
 								+ " didn't config tables,so you must set dataNode property!");
 			}
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-			SchemaConfig schemaConfig = new SchemaConfig(name, dataNode, tables,
-					sqlMaxLimit, "true".equalsIgnoreCase(checkSQLSchemaStr));
-
-
-			//判断是否有不是mysql的数据库类型，方便解析判断是否启用多数据库分页语法解析
-
-			for (String tableName : tables.keySet())
-			{
-				TableConfig tableConfig=	tables.get(tableName);
-				if(isHasMultiDbType(tableConfig))
-				{
-=======
 			SchemaConfig schemaConfig = new SchemaConfig(name, dataNode,
 					tables, sqlMaxLimit,
 					"true".equalsIgnoreCase(checkSQLSchemaStr));
@@ -205,27 +170,10 @@ public class XMLSchemaLoader implements SchemaLoader {
 			for (String tableName : tables.keySet()) {
 				TableConfig tableConfig = tables.get(tableName);
 				if (isHasMultiDbType(tableConfig)) {
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 					schemaConfig.setNeedSupportMultiDBType(true);
 					break;
 				}
 			}
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-			Map<String,String> dataNodeDbTypeMap=new HashMap<>();
-			for (String dataNodeName : dataNodes.keySet())
-			{
-				DataNodeConfig  dataNodeConfig=	  dataNodes.get(dataNodeName);
-			    String dataHost=	dataNodeConfig.getDataHost();
-				DataHostConfig dataHostConfig = dataHosts.get(dataHost);
-				if(dataHostConfig !=null )
-				{
-				  String dbType=	  dataHostConfig.getDbType();
-					dataNodeDbTypeMap.put(dataNodeName,dbType);
-				}
-			}
-			  schemaConfig.setDataNodeDbTypeMap(dataNodeDbTypeMap);
-				schemas.put(name, schemaConfig);
-=======
 			Map<String, String> dataNodeDbTypeMap = new HashMap<>();
 			for (String dataNodeName : dataNodes.keySet()) {
 				DataNodeConfig dataNodeConfig = dataNodes.get(dataNodeName);
@@ -238,7 +186,6 @@ public class XMLSchemaLoader implements SchemaLoader {
 			}
 			schemaConfig.setDataNodeDbTypeMap(dataNodeDbTypeMap);
 			schemas.put(name, schemaConfig);
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 		}
 	}
 
@@ -301,14 +248,9 @@ public class XMLSchemaLoader implements SchemaLoader {
 			}
 			for (int j = 0; j < tableNames.length; j++) {
 				String tableName = tableNames[j];
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-				TableConfig table = new TableConfig(tableName, primaryKey, autoIncrement,needAddLimit,
-						tableType, dataNode,getDbType(dataNode),
-=======
 				TableConfig table = new TableConfig(tableName, primaryKey,
 						autoIncrement, needAddLimit, tableType, dataNode,
 						getDbType(dataNode),
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 						(tableRule != null) ? tableRule.getRule() : null,
 						ruleRequired, null, false, null, null);
 				checkDataNodeExists(table.getDataNodes());
@@ -323,64 +265,14 @@ public class XMLSchemaLoader implements SchemaLoader {
 			}
 
 			if (tableNames.length == 1) {
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-				TableConfig table = new TableConfig(tableNames[0], primaryKey, autoIncrement,needAddLimit,
-						tableType, dataNode,getDbType(dataNode),
-						(tableRule != null) ? tableRule.getRule() : null,
-						ruleRequired, null, false, null, null);
-=======
 				TableConfig table = tables.get(tableNames[0]);
 
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 				// process child tables
 				processChildTables(tables, table, dataNode, tableElement);
 			}
 		}
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-
-
-=======
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 		return tables;
-	}
-	private Set<String> getDbType(String dataNode){
-        Set<String> dbTypes=new HashSet<>();
-      String[] dataNodeArr= SplitUtil.split(dataNode,',', '$', '-') ;
-        for (String node : dataNodeArr)
-        {
-            DataNodeConfig datanode=dataNodes.get(node);
-            DataHostConfig datahost=dataHosts.get(datanode.getDataHost());
-            dbTypes.add(datahost.getDbType());
-        }
-
-		return dbTypes;
-	}
-
-	private Set<String> getDataNodeDbTypeMap(String dataNode){
-		Set<String> dbTypes=new HashSet<>();
-		String[] dataNodeArr= SplitUtil.split(dataNode,',', '$', '-') ;
-		for (String node : dataNodeArr)
-		{
-			DataNodeConfig datanode=dataNodes.get(node);
-			DataHostConfig datahost=dataHosts.get(datanode.getDataHost());
-			dbTypes.add(datahost.getDbType());
-		}
-
-		return dbTypes;
-	}
-
-	private boolean isHasMultiDbType(TableConfig table)
-	{
-		Set<String> dbTypes= table.getDbTypes()  ;
-		for (String dbType : dbTypes)
-		{
-			if(!"mysql".equalsIgnoreCase(dbType))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -478,17 +370,11 @@ public class XMLSchemaLoader implements SchemaLoader {
 					.toUpperCase();
 			String parentKey = childTbElement.getAttribute("parentKey")
 					.toUpperCase();
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-			TableConfig table = new TableConfig(cdTbName, primaryKey, autoIncrement,needAddLimit,
-					TableConfig.TYPE_GLOBAL_DEFAULT, dataNodes,getDbType(dataNodes), null, false,
-					parentTable, true, joinKey, parentKey);
-=======
 			TableConfig table = new TableConfig(cdTbName, primaryKey,
 					autoIncrement, needAddLimit,
 					TableConfig.TYPE_GLOBAL_DEFAULT, dataNodes,
 					getDbType(dataNodes), null, false, parentTable, true,
 					joinKey, parentKey);
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 			if (tables.containsKey(table.getName())) {
 				throw new ConfigException("table " + table.getName()
 						+ " duplicated!");
@@ -522,36 +408,6 @@ public class XMLSchemaLoader implements SchemaLoader {
 				throw new ConfigException("dataNode " + dnNamePre
 						+ " define error ,attribute can't be empty");
 			}
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-            String[] dnNames = org.opencloudb.util.SplitUtil.split(
-                    dnNamePre, ',', '$', '-');
-			String[] databases = org.opencloudb.util.SplitUtil.split(
-					databaseStr, ',', '$', '-');
-            String[] hostStrings = org.opencloudb.util.SplitUtil.split(
-                    host, ',', '$', '-');
-
-			if(dnNames.length>1&&dnNames.length!=databases.length*hostStrings.length)
-			{
-				throw new ConfigException("dataNode " + dnNamePre
-						+ " define error ,dnNames.length must be=databases.length*hostStrings.length");
-			}
-            if (dnNames.length > 1)
-            {
-				List<String[]> mhdList= mergerHostDatabase( hostStrings , databases);
-					for (int k = 0; k < dnNames.length; k++)
-					{
-						String[] hd=mhdList.get(k);
-						String dnName = dnNames[k];
-						String databaseName = hd[1];
-						String hostName = hd[0];
-						createDataNode(dnName, databaseName,
-								hostName);
-
-					}
-
-            }
-            else {
-=======
 			String[] dnNames = io.mycat.util.SplitUtil.split(dnNamePre,
 					',', '$', '-');
 			String[] databases = io.mycat.util.SplitUtil.split(
@@ -579,27 +435,12 @@ public class XMLSchemaLoader implements SchemaLoader {
 				}
 
 			} else {
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 				createDataNode(dnNamePre, databaseStr, host);
 			}
 
 		}
 	}
 
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-	private List<String[]> mergerHostDatabase(String[] hostStrings ,String[] databases)
-	{
-		List<String[]> mhdList=new ArrayList<>();
-		for (int i = 0; i < hostStrings.length; i++)
-		{
-			String hostString = hostStrings[i];
-			for (int i1 = 0; i1 < databases.length; i1++)
-			{
-				String database = databases[i1];
-				String[] hd=new String[2];
-				hd[0]=hostString;
-				hd[1]=database;
-=======
 	private List<String[]> mergerHostDatabase(String[] hostStrings,
 			String[] databases) {
 		List<String[]> mhdList = new ArrayList<>();
@@ -610,7 +451,6 @@ public class XMLSchemaLoader implements SchemaLoader {
 				String[] hd = new String[2];
 				hd[0] = hostString;
 				hd[1] = database;
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 				mhdList.add(hd);
 			}
 		}
@@ -704,20 +544,11 @@ public class XMLSchemaLoader implements SchemaLoader {
 			long logTime = "".equals(logTimeStr) ? PhysicalDBPool.LONG_TIME : Long.valueOf(logTimeStr) ;
 			String heartbeatSQL = element.getElementsByTagName("heartbeat")
 					.item(0).getTextContent();
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-			NodeList connectionInitSqlList = element.getElementsByTagName("connectionInitSql");
-			String initConSQL = null;
-			if(connectionInitSqlList.getLength()>0)
-			{
-				initConSQL = connectionInitSqlList
-						.item(0).getTextContent();
-=======
 			NodeList connectionInitSqlList = element
 					.getElementsByTagName("connectionInitSql");
 			String initConSQL = null;
 			if (connectionInitSqlList.getLength() > 0) {
 				initConSQL = connectionInitSqlList.item(0).getTextContent();
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 			}
 			NodeList writeNodes = element.getElementsByTagName("writeHost");
 			DBHostConfig[] writeDbConfs = new DBHostConfig[writeNodes
@@ -750,11 +581,8 @@ public class XMLSchemaLoader implements SchemaLoader {
 			hostConf.setWriteType(writeType);
 			hostConf.setHearbeatSQL(heartbeatSQL);
 			hostConf.setConnectionInitSql(initConSQL);
-<<<<<<< HEAD:src/main/java/org/opencloudb/config/loader/xml/XMLSchemaLoader.java
-=======
 			hostConf.setFilters(filters);
 			hostConf.setLogTime(logTime);
->>>>>>> mycatapache/master:src/main/java/io/mycat/server/config/XMLSchemaLoader.java
 			dataHosts.put(hostConf.getName(), hostConf);
 
 		}

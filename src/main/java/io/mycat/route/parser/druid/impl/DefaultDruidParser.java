@@ -16,17 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import org.apache.log4j.Logger;
-<<<<<<< HEAD:src/main/java/org/opencloudb/parser/druid/impl/DefaultDruidParser.java
-import org.opencloudb.cache.LayerCachePool;
-import org.opencloudb.config.model.SchemaConfig;
-import org.opencloudb.mpp.RangeValue;
-import org.opencloudb.parser.druid.DruidParser;
-import org.opencloudb.parser.druid.DruidShardingParseInfo;
-import org.opencloudb.route.RouteResultset;
-=======
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/parser/druid/impl/DefaultDruidParser.java
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
@@ -64,11 +54,7 @@ public class DefaultDruidParser implements DruidParser {
 	 * @param schema
 	 * @param stmt
 	 */
-<<<<<<< HEAD:src/main/java/org/opencloudb/parser/druid/impl/DefaultDruidParser.java
-	public void parser(SchemaConfig schema, RouteResultset rrs, SQLStatement stmt, String originSql,LayerCachePool cachePool,SchemaStatVisitor schemaStatVisitor) throws SQLNonTransientException {
-=======
 	public void parser(SchemaConfig schema, RouteResultset rrs, SQLStatement stmt, String originSql,LayerCachePool cachePool,MycatSchemaStatVisitor schemaStatVisitor) throws SQLNonTransientException {
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/parser/druid/impl/DefaultDruidParser.java
 		ctx = new DruidShardingParseInfo();
 		//设置为原始sql，如果有需要改写sql的，可以通过修改SQLStatement中的属性，然后调用SQLStatement.toString()得到改写的sql
 		ctx.setSql(originSql);
@@ -105,11 +91,7 @@ public class DefaultDruidParser implements DruidParser {
 	 * @param stmt
 	 */
 	@Override
-<<<<<<< HEAD:src/main/java/org/opencloudb/parser/druid/impl/DefaultDruidParser.java
-	public void visitorParse(RouteResultset rrs, SQLStatement stmt,SchemaStatVisitor visitor) throws SQLNonTransientException{
-=======
 	public void visitorParse(RouteResultset rrs, SQLStatement stmt,MycatSchemaStatVisitor visitor) throws SQLNonTransientException{
->>>>>>> mycatapache/master:src/main/java/io/mycat/route/parser/druid/impl/DefaultDruidParser.java
 
 		stmt.accept(visitor);
 		

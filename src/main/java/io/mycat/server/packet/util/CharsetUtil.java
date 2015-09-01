@@ -38,7 +38,7 @@ public class CharsetUtil {
     private static final Map<Integer,String> INDEX_TO_CHARSET = new HashMap<>();
     private static final Map<String, Integer> CHARSET_TO_INDEX = new HashMap<>();
     static {
-        //Ìí¼Ó³£¼û±àÂëÄ¬ÈÏÖµ£¬·ÀÖ¹ÓÃ»§Î´ÅäÖÃÎÄ¼ş index_to_charset.properties
+        //æ·»åŠ å¸¸è§ç¼–ç é»˜è®¤å€¼ï¼Œé˜²æ­¢ç”¨æˆ·æœªé…ç½®æ–‡ä»¶ index_to_charset.properties
         INDEX_TO_CHARSET.put(1,"big5");
         INDEX_TO_CHARSET.put(8,"latin1");
         INDEX_TO_CHARSET.put(9,"latin2");
