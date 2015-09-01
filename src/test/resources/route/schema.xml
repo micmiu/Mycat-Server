@@ -8,7 +8,7 @@
 	License for the specific language governing permissions and - limitations 
 	under the License. -->
 <!DOCTYPE mycat:schema SYSTEM "schema.dtd">
-<mycat:schema xmlns:mycat="http://org.opencloudb/">
+<mycat:schema xmlns:mycat="http://io.mycat/">
 
 	<schema name="cndb" checkSQLschema="true" >
 		<table name="offer" dataNode="offer_dn$0-127" rule="offerRule" />
@@ -32,6 +32,7 @@
 	<schema name="solo1" dataNode="solo1" />
 
 	<schema name="TESTDB"  sqlMaxLimit="100">
+		<table name="travelrecord" dataNode="dn1,dn2,dn3" rule="auto-sharding-long" />
 		<!-- global table is auto cloned to all defined data nodes ,so can join 
 			with any table whose sharding node is in the same data node -->
 		<table name="company" type="global" dataNode="dn1,dn2,dn3" />
@@ -49,6 +50,11 @@
 				parentKey="id" />
 		</table>
 		<table name="globalsn" primaryKey="ID" type="global" dataNode="dn1" />
+        <table name="offer" primaryKey="id" dataNode="offer_dn$1-20"
+               rule="auto-sharding-rang-mod" />
+
+        <table name="offer1" primaryKey="id" dataNode="offer_dn$1-36"
+               rule="rangeDateHash" />
 	</schema>
 
     <schema name="mysqldb"  sqlMaxLimit="100">
@@ -71,6 +77,31 @@
 		<table name="offer1" dataNode="sqlserver_1" rule="offerRule" />
 	</schema>
 
+    <schema name="mysqldb"  sqlMaxLimit="100">
+        <table name="offer" dataNode="dn1,dn2" rule="offerRule" />
+        <table name="offer1" dataNode="dn1" rule="offerRule" />
+    </schema>
+    <schema name="oracledb"  sqlMaxLimit="100">
+        <table name="offer" dataNode="d_oracle1,d_oracle2" rule="offerRule" />
+        <table name="offer1" dataNode="d_oracle1" rule="offerRule" />
+    </schema>
+
+	<schema name="db2db"  sqlMaxLimit="100">
+		<table name="offer" dataNode="db2_1,db2_2" rule="offerRule" />
+		<table name="offer1" dataNode="db2_1" rule="offerRule" />
+	</schema>
+
+
+	<schema name="sqlserverdb"  sqlMaxLimit="100">
+		<table name="offer" dataNode="sqlserver_1,sqlserver_2" rule="offerRule" />
+		<table name="offer1" dataNode="sqlserver_1" rule="offerRule" />
+	</schema>
+
+
+	<schema name="pgdb"  sqlMaxLimit="100">
+		<table name="offer" dataNode="pg_1,pg_2" rule="offerRule" />
+		<table name="offer1" dataNode="pg_1" rule="offerRule" />
+	</schema>
 
 	<schema name="pgdb"  sqlMaxLimit="100">
 		<table name="offer" dataNode="pg_1,pg_2" rule="offerRule" />
