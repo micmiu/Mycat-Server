@@ -23,7 +23,8 @@
  */
 package io.mycat.server.executors;
 
-import io.mycat.MycatConfig;
+import com.google.common.base.Strings;
+import io.mycat.MycatServer;
 import io.mycat.backend.BackendConnection;
 import io.mycat.backend.PhysicalDBNode;
 import io.mycat.backend.nio.MySQLBackendConnection;
@@ -33,23 +34,32 @@ import io.mycat.route.RouteResultset;
 import io.mycat.route.RouteResultsetNode;
 import io.mycat.server.ErrorCode;
 import io.mycat.server.MySQLFrontConnection;
-import io.mycat.server.MycatServer;
 import io.mycat.server.NonBlockingSession;
+import io.mycat.server.packet.BinaryRowDataPacket;
+import io.mycat.server.config.node.MycatConfig;
+import io.mycat.server.config.node.SchemaConfig;
 import io.mycat.server.packet.ErrorPacket;
+import io.mycat.server.packet.FieldPacket;
 import io.mycat.server.packet.OkPacket;
+import io.mycat.server.packet.RowDataPacket;
 import io.mycat.server.packet.util.LoadDataUtil;
+import io.mycat.server.parser.ServerParse;
+import io.mycat.server.parser.ServerParseShow;
+import io.mycat.server.response.ShowTables;
 import io.mycat.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.Set;
 
 /**
  * @author mycat
  */
 public class SingleNodeHandler implements ResponseHandler, Terminatable,
 		LoadDataResponseHandler {
-	private static final Logger LOGGER = Logger
+	public static final Logger LOGGER = LoggerFactory
 			.getLogger(SingleNodeHandler.class);
 	private final RouteResultsetNode node;
 	private final RouteResultset rrs;
@@ -58,6 +68,11 @@ public class SingleNodeHandler implements ResponseHandler, Terminatable,
 	private volatile byte packetId;
 	private volatile boolean isRunning;
 	private Runnable terminateCallBack;
+	private boolean prepared;
+	private int fieldCount;
+	private List<FieldPacket> fieldPackets = new ArrayList<FieldPacket>();
+    private volatile boolean isDefaultNodeShowTable;
+    private Set<String> shardingTablesSet;
 
 	public SingleNodeHandler(RouteResultset rrs, NonBlockingSession session) {
 		this.rrs = rrs;
@@ -69,6 +84,19 @@ public class SingleNodeHandler implements ResponseHandler, Terminatable,
 			throw new IllegalArgumentException("session is null!");
 		}
 		this.session = session;
+        MySQLFrontConnection source = session.getSource();
+        String schema=source.getSchema();
+        if(schema!=null&&ServerParse.SHOW==rrs.getSqlType())
+        {
+            SchemaConfig schemaConfig= MycatServer.getInstance().getConfig().getSchemas().get(schema);
+            int type= ServerParseShow.tableCheck(rrs.getStatement(),0) ;
+            isDefaultNodeShowTable=(ServerParseShow.TABLES==type &&!Strings.isNullOrEmpty(schemaConfig.getDataNode()));
+
+            if(isDefaultNodeShowTable)
+            {
+                shardingTablesSet = ShowTables.getTableSet(source, rrs.getStatement());
+            }
+        }
 	}
 
 	@Override
@@ -234,17 +262,48 @@ public class SingleNodeHandler implements ResponseHandler, Terminatable,
 		for (int i = 0, len = fields.size(); i < len; ++i) {
 			byte[] field = fields.get(i);
 			field[3] = ++packetId;
+			// 保存field信息
+			FieldPacket fieldPk = new FieldPacket();
+			fieldPk.read(field);
+			fieldPackets.add(fieldPk);
 			bufferArray.write(field);
 		}
+		fieldCount = fieldPackets.size();
 		eof[3] = ++packetId;
 		bufferArray.write(eof);
-		source.write(bufferArray);
+
+        if(isDefaultNodeShowTable)
+        {
+            for (String name : shardingTablesSet) {
+                RowDataPacket row = new RowDataPacket(1);
+                row.add(StringUtil.encode(name.toLowerCase(), source.getCharset()));
+                row.packetId = ++packetId;
+               row.write(bufferArray);
+            }
+        }
+        source.write(bufferArray);
 	}
 
 	@Override
 	public void rowResponse(byte[] row, BackendConnection conn) {
+        if(isDefaultNodeShowTable)
+        {
+            RowDataPacket rowDataPacket =new RowDataPacket(1);
+            rowDataPacket.read(row);
+            String table=  StringUtil.decode(rowDataPacket.fieldValues.get(0),conn.getCharset());
+            if(shardingTablesSet.contains(table.toUpperCase())) return;
+        }
 		row[3] = ++packetId;
-		session.getSource().write(row);
+		if(prepared) {
+			RowDataPacket rowDataPk = new RowDataPacket(fieldCount);
+			rowDataPk.read(row);
+			BinaryRowDataPacket binRowDataPk = new BinaryRowDataPacket();
+			binRowDataPk.read(fieldPackets, rowDataPk);
+			binRowDataPk.packetId = rowDataPk.packetId;
+			binRowDataPk.write(session.getSource());
+		} else {
+			session.getSource().write(row);
+		}
 	}
 
 	@Override
@@ -272,6 +331,14 @@ public class SingleNodeHandler implements ResponseHandler, Terminatable,
 	public String toString() {
 		return "SingleNodeHandler [node=" + node + ", packetId=" + packetId
 				+ "]";
+	}
+
+	public boolean isPrepared() {
+		return prepared;
+	}
+
+	public void setPrepared(boolean prepared) {
+		this.prepared = prepared;
 	}
 
 }

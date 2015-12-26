@@ -23,20 +23,18 @@
  */
 package io.mycat.server;
 
-import io.mycat.MycatConfig;
+import io.mycat.MycatServer;
 import io.mycat.backend.BackendConnection;
 import io.mycat.backend.PhysicalDBNode;
 import io.mycat.route.RouteResultset;
 import io.mycat.route.RouteResultsetNode;
-import io.mycat.server.executors.CommitNodeHandler;
-import io.mycat.server.executors.KillConnectionHandler;
-import io.mycat.server.executors.MultiNodeCoordinator;
-import io.mycat.server.executors.MultiNodeQueryHandler;
-import io.mycat.server.executors.RollbackNodeHandler;
-import io.mycat.server.executors.RollbackReleaseHandler;
-import io.mycat.server.executors.SingleNodeHandler;
+import io.mycat.server.config.node.MycatConfig;
+import io.mycat.server.config.node.SystemConfig;
+import io.mycat.server.executors.*;
 import io.mycat.server.packet.OkPacket;
 import io.mycat.server.sqlcmd.SQLCmdConstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,14 +44,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author mycat
  * @author mycat
  */
 public class NonBlockingSession{
-	public static final Logger LOGGER = Logger
+	public static final Logger LOGGER = LoggerFactory
 			.getLogger(NonBlockingSession.class);
 
 	private final MySQLFrontConnection source;
@@ -65,6 +61,8 @@ public class NonBlockingSession{
 	private final MultiNodeCoordinator multiNodeCoordinator;
 	private final CommitNodeHandler commitHandler;
 	private volatile String xaTXID;
+	
+	private boolean prepared;
 
 	public NonBlockingSession(MySQLFrontConnection source) {
 		this.source = source;
@@ -121,26 +119,36 @@ public class NonBlockingSession{
 
 		if (nodes.length == 1) {
 			singleNodeHandler = new SingleNodeHandler(rrs, this);
+			if(this.isPrepared()) {
+				singleNodeHandler.setPrepared(true);
+			}
 			try {
 				singleNodeHandler.execute();
 			} catch (Exception e) {
-				LOGGER.warn(new StringBuilder().append(source).append(rrs), e);
+				LOGGER.warn("{} {}", source, rrs, e);
 				source.writeErrMessage(ErrorCode.ERR_HANDLE_DATA, e.toString());
 			}
 		} else {
 			boolean autocommit = source.isAutocommit();
-			SystemConfig sysConfig = MycatServer.getInstance().getConfig()
-					.getSystem();
+//			SystemConfig sysConfig = MycatServer.getInstance().getConfig()
+//					.getSystem();
 			multiNodeHandler = new MultiNodeQueryHandler(type, rrs, autocommit,
 					this);
-
+			if(this.isPrepared()) {
+				multiNodeHandler.setPrepared(true);
+			}
 			try {
 				multiNodeHandler.execute();
 			} catch (Exception e) {
-				LOGGER.warn(new StringBuilder().append(source).append(rrs), e);
+				LOGGER.warn("{} {}", source, rrs, e);
 				source.writeErrMessage(ErrorCode.ERR_HANDLE_DATA, e.toString());
 			}
 		}
+		
+		if(this.isPrepared()) {
+			this.setPrepared(false);
+		}
+		
 	}
 
 	public void commit() {
@@ -376,6 +384,16 @@ public class NonBlockingSession{
 
 	public String getXaTXID() {
 		return xaTXID;
+	}
+
+
+	public boolean isPrepared() {
+		return prepared;
+	}
+
+
+	public void setPrepared(boolean prepared) {
+		this.prepared = prepared;
 	}
 
 }

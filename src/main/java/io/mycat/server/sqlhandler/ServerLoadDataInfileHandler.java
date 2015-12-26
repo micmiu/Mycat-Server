@@ -23,6 +23,7 @@
  */
 package io.mycat.server.sqlhandler;
 
+import io.mycat.MycatServer;
 import io.mycat.cache.LayerCachePool;
 import io.mycat.route.RouteResultset;
 import io.mycat.route.RouteResultsetNode;
@@ -33,10 +34,9 @@ import io.mycat.route.util.RouterUtil;
 import io.mycat.server.ErrorCode;
 import io.mycat.server.LoadDataInfileHandler;
 import io.mycat.server.MySQLFrontConnection;
-import io.mycat.server.MycatServer;
-import io.mycat.server.SystemConfig;
-import io.mycat.server.config.SchemaConfig;
-import io.mycat.server.config.TableConfig;
+import io.mycat.server.config.node.SchemaConfig;
+import io.mycat.server.config.node.SystemConfig;
+import io.mycat.server.config.node.TableConfig;
 import io.mycat.server.packet.BinaryPacket;
 import io.mycat.server.packet.RequestFilePacket;
 import io.mycat.server.parser.ServerParse;
@@ -147,6 +147,10 @@ public final class ServerLoadDataInfileHandler implements LoadDataInfileHandler
         SQLTextLiteralExpr rawEnclosed = (SQLTextLiteralExpr) statement.getColumnsEnclosedBy();
         String enclose = rawEnclosed == null ? null : rawEnclosed.getText();
         loadData.setEnclose(enclose);
+
+        SQLTextLiteralExpr escapseExpr =  (SQLTextLiteralExpr)statement.getColumnsEscaped() ;
+        String escapse=escapseExpr==null?"\\":escapseExpr.getText();
+        loadData.setEscape(escapse);
 
         String charset = statement.getCharset() != null ? statement.getCharset() : serverConnection.getCharset();
         loadData.setCharset(charset);
@@ -413,6 +417,7 @@ public final class ServerLoadDataInfileHandler implements LoadDataInfileHandler
                     data.setEnclose(loadData.getEnclose());
                     data.setFieldTerminatedBy(loadData.getFieldTerminatedBy());
                     data.setLineTerminatedBy(loadData.getLineTerminatedBy());
+                    data.setEscape(loadData.getEscape());
                     routeResultMap.put(name, data);
                 }
 
@@ -494,13 +499,13 @@ public final class ServerLoadDataInfileHandler implements LoadDataInfileHandler
         StringBuilder sb = new StringBuilder();
         for (int i = 0, srcLength = src.length; i < srcLength; i++)
         {
-            String s = src[i];
+            String s = src[i]!=null?src[i]:"";
             if(loadData.getEnclose()==null)
             {
                   sb.append(s);
             }   else
             {
-                sb.append(loadData.getEnclose()).append(s).append(loadData.getEnclose());
+                sb.append(loadData.getEnclose()).append(s.replace(loadData.getEnclose(),loadData.getEscape()+loadData.getEnclose())).append(loadData.getEnclose());
             }
             if(i!=srcLength-1)
             {
@@ -629,6 +634,10 @@ public final class ServerLoadDataInfileHandler implements LoadDataInfileHandler
             {
                 settings.getFormat().setQuote(loadData.getEnclose().charAt(0));
             }
+            if(loadData.getEscape()!=null)
+            {
+                settings.getFormat().setQuoteEscape(loadData.getEscape().charAt(0));
+            }
             settings.getFormat().setNormalizedNewline(loadData.getLineTerminatedBy().charAt(0));
             CsvParser parser = new CsvParser(settings);
             try
@@ -671,6 +680,10 @@ public final class ServerLoadDataInfileHandler implements LoadDataInfileHandler
         if(loadData.getEnclose()!=null)
         {
             settings.getFormat().setQuote(loadData.getEnclose().charAt(0));
+        }
+        if(loadData.getEscape()!=null)
+        {
+            settings.getFormat().setQuoteEscape(loadData.getEscape().charAt(0));
         }
         settings.getFormat().setNormalizedNewline(loadData.getLineTerminatedBy().charAt(0));
         CsvParser parser = new CsvParser(settings);

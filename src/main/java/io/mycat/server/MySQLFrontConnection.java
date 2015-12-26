@@ -1,8 +1,9 @@
 package io.mycat.server;
 
+import io.mycat.MycatServer;
 import io.mycat.net.NetSystem;
 import io.mycat.route.RouteResultset;
-import io.mycat.server.config.SchemaConfig;
+import io.mycat.server.config.node.SchemaConfig;
 import io.mycat.server.packet.HandshakePacket;
 import io.mycat.server.packet.MySQLMessage;
 import io.mycat.server.packet.OkPacket;
@@ -13,6 +14,7 @@ import io.mycat.server.sqlhandler.KillHandler;
 import io.mycat.server.sqlhandler.SavepointHandler;
 import io.mycat.server.sqlhandler.SelectHandler;
 import io.mycat.server.sqlhandler.ServerLoadDataInfileHandler;
+import io.mycat.server.sqlhandler.ServerPrepareHandler;
 import io.mycat.server.sqlhandler.SetHandler;
 import io.mycat.server.sqlhandler.ShowHandler;
 import io.mycat.server.sqlhandler.StartHandler;
@@ -75,10 +77,10 @@ public class MySQLFrontConnection extends GenalMySQLConnection {
 		remoteAddr = (InetSocketAddress) ((SocketChannel) channel)
 				.getRemoteAddress();
 		this.host = remoteAddr.getHostString();
-		this.port = localAddr.getPort();
-		this.localPort = remoteAddr.getPort();
+		this.port = remoteAddr.getPort();
+		this.localPort = localAddr.getPort();
 		loadDataInfileHandler = new ServerLoadDataInfileHandler(this);
-
+		prepareHandler = new ServerPrepareHandler(this);
 	}
 
 	public void sendAuthPackge() throws IOException {
@@ -234,7 +236,12 @@ public class MySQLFrontConnection extends GenalMySQLConnection {
 					"Unknown charset '" + charset + "'");
 			return;
 		}
+		
+		query(sql);
 
+	}
+	
+	public void query(String sql) {
 		if (sql == null || sql.length() == 0) {
 			writeErrMessage(ErrorCode.ER_NOT_ALLOWED_COMMAND, "Empty SQL");
 			return;
@@ -264,7 +271,8 @@ public class MySQLFrontConnection extends GenalMySQLConnection {
 				&& sqlType!=ServerParse.SHOW
 				&& sqlType!=ServerParse.KILL
 				&& sqlType!=ServerParse.KILL_QUERY
-				&& sqlType!=ServerParse.MYSQL_COMMENT ) {
+				&& sqlType!=ServerParse.MYSQL_COMMENT
+				&& sqlType!=ServerParse.MYSQL_CMD_COMMENT) {
 			writeErrMessage(ErrorCode.ERR_BAD_LOGICDB, "No MyCAT Database selected");
 			return;
 		}
@@ -413,7 +421,7 @@ public class MySQLFrontConnection extends GenalMySQLConnection {
 
 	public void stmtClose(byte[] data) {
 		if (prepareHandler != null) {
-			prepareHandler.close();
+			prepareHandler.close(data);
 		} else {
 			writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR,
 					"Prepare unsupported!");
@@ -506,10 +514,17 @@ public class MySQLFrontConnection extends GenalMySQLConnection {
 		if (getLoadDataInfileHandler() != null) {
 			getLoadDataInfileHandler().clear();
 		}
+		if(getPrepareHandler() != null) {
+			getPrepareHandler().clear();
+		}
 	}
 
 	public LoadDataInfileHandler getLoadDataInfileHandler() {
 		return loadDataInfileHandler;
+	}
+	
+	public FrontendPrepareHandler getPrepareHandler() {
+		return prepareHandler;
 	}
 
 	public void ping() {
